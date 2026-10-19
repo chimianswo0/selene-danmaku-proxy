@@ -8,6 +8,8 @@ const DANDANPLAY_API = 'https://api.dandanplay.net';
 app.use('/api', async (req, res) => {
   try {
     const targetUrl = `${DANDANPLAY_API}${req.originalUrl}`;
+    console.log('Proxying to:', targetUrl);
+    
     const response = await fetch(targetUrl, {
       method: req.method,
       headers: {
@@ -20,11 +22,15 @@ app.use('/api', async (req, res) => {
     });
     
     const data = await response.text();
+    console.log('Response status:', response.status);
+    console.log('Response length:', data.length);
+    
     res.set('Content-Type', 'application/json');
+    res.status(response.status);
     res.send(data);
   } catch (error) {
     console.error('Proxy error:', error);
-    res.status(500).json({ error: 'Proxy error' });
+    res.status(500).json({ error: 'Proxy error: ' + error.message });
   }
 });
 
